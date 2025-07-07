@@ -1,0 +1,108 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{% static 'css/form_styles.css' %}">
+</head>
+<body>
+    <div class="compact-form">
+        <h5 class="mb-3">{{ title }}</h5>
+
+        <form class="mb-4" method="post" action="{% url 'main:save' %}">
+            {% csrf_token %}
+            
+            <!-- Поле user с обработкой ошибок -->
+            <div class="mb-2">
+                <label for="user" class="form-label">Имя пользователя</label>
+                <input 
+                    type="text" 
+                    class="form-control {% if form.user.errors %}is-invalid{% endif %}" 
+                    id="user" 
+                    name="user" 
+                    value="{{ form.user.value|default_if_none:'' }}"
+                >
+                {% if form.user.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.user.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Поле email с обработкой ошибок -->
+            <div class="mb-2">
+                <label for="email" class="form-label">Email для рассылки</label>
+                <input 
+                    type="email" 
+                    class="form-control {% if form.email.errors %}is-invalid{% endif %}" 
+                    id="email" 
+                    name="email" 
+                    value="{{ form.email.value|default_if_none:'' }}"
+                    aria-describedby="emailHelp"
+                >
+                <div id="emailHelp" class="form-text">Будет использоваться как отправитель писем</div>
+                {% if form.email.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.email.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-sm">Сохранить пользователя</button>
+        </form>
+
+        <!-- Вывод общих ошибок формы -->
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger mt-3">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show mt-3">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+
+        <form class="mb-4" method="post" action="{% url 'main:masseges' %}">
+            {% csrf_token %}
+            
+            <!-- Поле title -->
+            <div class="mb-2">
+                <label for="title" class="form-label">Тема сообщения</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    id="title"
+                    name="title">
+            </div>
+            
+            <!-- Поле text -->
+            <div class="mb-2">
+                <label for="text" class="form-label">Тело сообщения</label>
+                <textarea 
+                    class="form-control" 
+                    id="text" 
+                    name="text"
+                    rows="3"></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-sm">Разослать всем сообщение</button>
+        </form>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
